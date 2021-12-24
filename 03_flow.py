@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 from datetime import datetime
 from prefect import task, Flow
+from prefect.run_configs import LocalRun
 
 @task
 def extract(url: str) -> dict:
@@ -32,7 +33,8 @@ def load(data: pd.DataFrame, path: str) -> None:
     
 
 def prefect_flow():
-    with Flow(name='simple_etl_pipeline') as flow:
+    with Flow(name='simple_etl_pipeline', 
+                run_config=LocalRun()) as flow:
         users = extract(url='https://jsonplaceholder.typicode.com/users')
         df_users = transform(users)
         load(data=df_users, path=f'data/users_{int(datetime.now().timestamp())}.csv')
@@ -40,4 +42,4 @@ def prefect_flow():
 
 if __name__ == '__main__':
     flow = prefect_flow()
-    flow.run()
+    flow.register(project_name="scraping")

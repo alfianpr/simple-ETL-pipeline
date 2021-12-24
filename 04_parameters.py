@@ -42,6 +42,7 @@ def prefect_flow():
 
 if __name__ == '__main__':
     flow = prefect_flow()
+    flow.register(project_name="scraping")
     flow.run(parameters={
         'p_url': 'https://jsonplaceholder.typicode.com/users'
     })
